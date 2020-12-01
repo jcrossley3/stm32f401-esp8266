@@ -1,5 +1,5 @@
 [package]
-name = "blinky"
+name = "knative-client"
 version = "0.1.0"
 authors = ["Jim Crossley <jim@crossleys.org>"]
 edition = "2018"

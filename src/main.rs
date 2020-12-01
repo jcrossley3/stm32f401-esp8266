@@ -5,7 +5,7 @@
 const WIFI_SSID: &str = include_str!("wifi.ssid.txt");
 const WIFI_PASSWORD: &str = include_str!("wifi.password.txt");
 const HOST: &str = "192.168.0.110";
-const HOST_HEADER: &str = "http-endpoint.drogue-iot.10.96.168.111.nip.io";
+const HOST_HEADER: &str = "http-endpoint.drogue-iot.10.99.138.240.nip.io";
 
 mod device;
 
