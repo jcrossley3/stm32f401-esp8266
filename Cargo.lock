@@ -154,9 +154,9 @@ checksum = "7313c0d620d0cb4dbd9d019e461a4beb501071ff46ec0ab933efb4daa76d73e3"
 
 [[package]]
 name = "drogue-esp8266"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5992d2d9fe6e37123194cc60709f6bf100e886032ab8c80115d2dbc9cd112f2"
+checksum = "2c5b6cb1dee74e7496e812cae288aaaf1645a837f6ab9706bb931fa16fe17a80"
 dependencies = [
  "drogue-network",
  "embedded-hal",

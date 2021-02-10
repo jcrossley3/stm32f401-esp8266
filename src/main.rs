@@ -4,12 +4,12 @@
 // Network-specfic values
 const WIFI_SSID: &str = include_str!("wifi.ssid.txt");
 const WIFI_PASSWORD: &str = include_str!("wifi.password.txt");
-const HOST: &str = "192.168.0.115";
+const ENDPOINT: &str = "http-endpoint-drogue-iot.apps.wonderful.iot-playground.org";
+const ENDPOINT_PORT: u16 = 443;
 
 mod device;
 
 use core::str::from_utf8;
-use core::str::FromStr;
 use drogue_tls::{
     entropy::StaticEntropySource,
     net::tcp_stack::SslTcpStack,
@@ -29,11 +29,12 @@ use rtic::cyccnt::U32Ext;
 use drogue_esp8266::{ingress::Ingress, protocol::WiFiMode};
 use drogue_http_client::{tcp::TcpSocketSinkSource, BufferResponseHandler, HttpConnection, Source};
 use drogue_network::{
-    addr::{HostAddr, HostSocketAddr},
+    addr::{HostSocketAddr},
+    dns::{AddrType, Dns},
     tcp::{Mode, TcpStack},
 };
 
-static LOGGER: RTTLogger = RTTLogger::new(LevelFilter::Debug);
+static LOGGER: RTTLogger = RTTLogger::new(LevelFilter::Info);
 const DIGEST_DELAY: u32 = 200;
 
 #[app(device = nucleo_f401re::pac, peripherals = true, monotonic = rtic::cyccnt::CYCCNT)]
@@ -101,6 +102,9 @@ const APP: () = {
         let network = adapter.into_network_stack();
         info!("network intialized");
 
+	let addr = network.gethostbyname(ENDPOINT, AddrType::IPv4).unwrap();
+	info!("Resolve IP address to {:?}", addr);
+
         // BEGIN SSL-ify!
         let mut ssl_platform =
             SslPlatform::setup(cortex_m_rt::heap_start() as usize, 1024 * 64).unwrap();
@@ -123,7 +127,7 @@ const APP: () = {
         let socket = secure_network.open(Mode::Blocking).unwrap();
         info!("socket {:?}", socket);
 
-        let socket_addr = HostSocketAddr::new(HostAddr::from_str(HOST).unwrap(), 8080);
+        let socket_addr = HostSocketAddr::new(addr, ENDPOINT_PORT);
 
         let mut socket = secure_network.connect(socket, socket_addr).unwrap();
 
@@ -142,7 +146,11 @@ const APP: () = {
 
         let mut req = con
             .post("/v1/anything")
-            .headers(&[("Content-Type", "application/json"), ("Authorization", "Basic ZGV2aWNlX2lkQGFwcF9pZDpmb29iYXI=")])
+            .headers(&[
+		("Host", ENDPOINT),
+		("Content-Type", "text/json"),
+		("Authorization", "Basic ZGV2aWNlX2lkQGFwcF9pZDpmb29iYXI="),
+	    ])
             .handler(handler)
             .execute_with::<_, U512>(&mut tcp, Some(data.as_bytes()));
 
