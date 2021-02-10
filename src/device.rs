@@ -1,39 +1,29 @@
-
 use nucleo_f401re::{
-    pac::USART6,
     hal::{
         prelude::*,
         serial::{
             config::{Config, Parity, StopBits},
-            Serial,
-            Tx,
-            Rx,
+            Rx, Serial, Tx,
         },
     },
+    pac::USART6,
 };
 
 use heapless::{
-    spsc::Queue,
+    consts::{U16, U2},
     i,
-    consts::{
-        U2,
-        U16,
-    },
+    spsc::Queue,
 };
 
-use drogue_esp8266::{
-    initialize,
-    protocol::Response,
-    adapter::Adapter,
-    ingress::Ingress,
-};
+use drogue_esp8266::{adapter::Adapter, ingress::Ingress, initialize, protocol::Response};
 
 type SerialTx = Tx<USART6>;
 pub type SerialRx = Rx<USART6>;
 pub type ESPAdapter = Adapter<'static, SerialTx>;
 
-pub fn network_adapter(device: nucleo_f401re::pac::Peripherals) -> (ESPAdapter, Ingress<'static, SerialRx>) {
-
+pub fn network_adapter(
+    device: nucleo_f401re::pac::Peripherals,
+) -> (ESPAdapter, Ingress<'static, SerialRx>) {
     let rcc = device.RCC.constrain();
     let clocks = rcc.cfgr.sysclk(84.mhz()).freeze();
 
@@ -64,7 +54,8 @@ pub fn network_adapter(device: nucleo_f401re::pac::Peripherals) -> (ESPAdapter, 
             ..Default::default()
         },
         clocks,
-    ).unwrap();
+    )
+    .unwrap();
 
     serial.listen(nucleo_f401re::hal::serial::Event::Rxne);
     let (tx, rx) = serial.split();
@@ -73,9 +64,12 @@ pub fn network_adapter(device: nucleo_f401re::pac::Peripherals) -> (ESPAdapter, 
     static mut NOTIFICATION_QUEUE: Queue<Response, U16> = Queue(i::Queue::new());
 
     initialize(
-        tx, rx,
-        &mut en, &mut reset,
+        tx,
+        rx,
+        &mut en,
+        &mut reset,
         unsafe { &mut RESPONSE_QUEUE },
         unsafe { &mut NOTIFICATION_QUEUE },
-    ).unwrap()
+    )
+    .unwrap()
 }
