@@ -61,3 +61,8 @@ log_path = "./logs"
 enabled = false
 # The connection string in host:port format wher the GDB server will open a socket.
 # gdb_connection_string
+
+[gdb.gdb]
+enabled = true
+[gdb.rtt]
+enabled = false
