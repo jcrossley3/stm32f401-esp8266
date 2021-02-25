@@ -4,7 +4,7 @@
 // Network-specfic values
 const WIFI_SSID: &str = include_str!("wifi.ssid.txt");
 const WIFI_PASSWORD: &str = include_str!("wifi.password.txt");
-const ENDPOINT: &str = "http-endpoint-drogue-iot.apps.wonderful.iot-playground.org";
+const ENDPOINT: &str = "http.sandbox.drogue.cloud";
 const ENDPOINT_PORT: u16 = 443;
 
 mod device;
@@ -29,12 +29,12 @@ use rtic::cyccnt::U32Ext;
 use drogue_esp8266::{ingress::Ingress, protocol::WiFiMode};
 use drogue_http_client::{tcp::TcpSocketSinkSource, BufferResponseHandler, HttpConnection, Source};
 use drogue_network::{
-    addr::{HostSocketAddr},
+    addr::HostSocketAddr,
     dns::{AddrType, Dns},
     tcp::{Mode, TcpStack},
 };
 
-static LOGGER: RTTLogger = RTTLogger::new(LevelFilter::Info);
+static LOGGER: RTTLogger = RTTLogger::new(LevelFilter::Debug);
 const DIGEST_DELAY: u32 = 200;
 
 #[app(device = nucleo_f401re::pac, peripherals = true, monotonic = rtic::cyccnt::CYCCNT)]
@@ -102,8 +102,8 @@ const APP: () = {
         let network = adapter.into_network_stack();
         info!("network intialized");
 
-	let addr = network.gethostbyname(ENDPOINT, AddrType::IPv4).unwrap();
-	info!("Resolve IP address to {:?}", addr);
+        let addr = network.gethostbyname(ENDPOINT, AddrType::IPv4).unwrap();
+        info!("Resolve IP address to {:?}", addr);
 
         // BEGIN SSL-ify!
         let mut ssl_platform =
@@ -147,10 +147,10 @@ const APP: () = {
         let mut req = con
             .post("/v1/anything")
             .headers(&[
-		("Host", ENDPOINT),
-		("Content-Type", "text/json"),
-		("Authorization", "Basic ZGV2aWNlX2lkQGFwcF9pZDpmb29iYXI="),
-	    ])
+                ("Host", ENDPOINT),
+                ("Content-Type", "text/json"),
+                ("Authorization", "Basic ZGV2aWNlX2lkQGFwcF9pZDpmb29iYXI="),
+            ])
             .handler(handler)
             .execute_with::<_, U512>(&mut tcp, Some(data.as_bytes()));
 
