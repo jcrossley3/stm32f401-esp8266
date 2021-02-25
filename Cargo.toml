@@ -19,7 +19,7 @@ log = "0.4.11"
 drogue-network = "0.2"
 drogue-esp8266 = "0.3.1"
 drogue-http-client = "0.0.2"
-drogue-tls = { path = "../drogue-tls/drogue-tls" }
+drogue-tls = { path = "../drogue-tls/drogue-tls", features = ["fewer-tables", "out-buffer-1k"] }
 drogue-tls-sys = { path = "../drogue-tls/drogue-tls-sys" }
 heapless = "0.5.5"
 
