@@ -4,8 +4,8 @@
 // Network-specfic values
 const WIFI_SSID: &str = include_str!("wifi.ssid.txt");
 const WIFI_PASSWORD: &str = include_str!("wifi.password.txt");
-const ENDPOINT: &str = "http.sandbox.drogue.cloud";
-const ENDPOINT_PORT: u16 = 443;
+const ENDPOINT: &str = "192.168.0.115";
+const ENDPOINT_PORT: u16 = 8080;
 
 mod device;
 
@@ -34,7 +34,7 @@ use drogue_network::{
     tcp::{Mode, TcpStack},
 };
 
-static LOGGER: RTTLogger = RTTLogger::new(LevelFilter::Debug);
+static LOGGER: RTTLogger = RTTLogger::new(LevelFilter::Info);
 const DIGEST_DELAY: u32 = 200;
 
 #[app(device = nucleo_f401re::pac, peripherals = true, monotonic = rtic::cyccnt::CYCCNT)]
